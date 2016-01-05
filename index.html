@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>0.30000000000000004 - 浮点运算</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
+    <script src="CodeMirror/lib/codemirror.js"></script>
+    <script src="CodeMirror/mode/clike/clike.js"></script>
+    <link href="bootstrap/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>浮点运算</h1>
+        <p>
+            在很多语言中 0.1 + 0.2 都会得到 0.30000000000000004，您的语言并没有错，计算机中的数字都是以二进制存储的，
+            如果要计算 0.1 + 0.2 的结果，计算机会先把 0.1 和 0.2 分别转化成二进制，然后相加，
+            最后再把相加得到的结果转为十进制，这些语言中的数字都是以 IEEE 754 双精度 64 位浮点数 来存储的，
+            这种表示带有一定的误差。<br />
+            这就是为什么 .1 + .2！= .3。
+        </p>
+    </div>
+
+    <!--<h3>Three equal columns</h3>
+    <p>Get three equal-width columns <strong>starting at desktops and scaling to large desktops</strong>. On mobile
+        devices, tablets and below, the columns will automatically stack.</p>
+    <div class="row">
+        <div class="col-md-4">.col-md-4</div>
+        <div class="col-md-4">.col-md-4</div>
+        <div class="col-md-4">.col-md-4</div>
+    </div>-->
+
+    <!--<h3>Three equal columns</h3>
+    <p>Get three equal-width columns <strong>starting at desktops and scaling to large desktops</strong>. On mobile
+        devices, tablets and below, the columns will automatically stack.</p>-->
+    <h4 class="text-center">阅读更多:
+        | <a href="https://zh.wikipedia.org/wiki/%E6%B5%AE%E7%82%B9%E6%95%B0" target="_blank">维基百科</a>
+        | <a target="_blank" href="http://grouper.ieee.org/groups/754/">IEEE 754</a>
+        | <a target="_blank" href="http://stackoverflow.com/questions/588004/is-javascripts-math-broken/588014">Stack Overflow</a></h4>
+    <h3>下面是各种语言.1 + .2标准输出的一些例子。</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class=" text-center">语言</th>
+                    <th class="text-center">代码</th>
+                    <th class="text-center">结果</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 1.C -->
+                <tr>
+                    <td class="text-center">C</td>
+                    <td><textarea id="code1">
+#include<stdio.h>
+int main(int argc, char** argv) {
+    printf("%.17f\n", .1+.2);
+    return 0;
+}
+</textarea></td>
+                    <td>0.30000000000000004</td>
+                </tr>
+                <!-- 2.C++ -->
+                <tr>
+                    <td class="text-center">C++</td>
+                    <td><textarea id="code2">
+#include <iomanip>
+std::cout << setprecision(17) << 0.1 + 0.2 << std.endl;
+</textarea></td>
+                    <td>0.30000000000000004</td>
+                </tr>
+                <!-- 3.PHP -->
+                <tr>
+                    <td class="text-center">PHP</td>
+                    <td><textarea id="code3">
+echo .1 + .2;
+</textarea></td>
+                    <td>0.3</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        PHP 实际是转换 0.30000000000000004 为一个字符串 并且截取成 "0.3".<br />
+                        为了实现达到预期的浮点结果, 只需要调整 ini 的设置: ini_set("precision", 17).
+                    </td>
+                </tr>
+                <!-- 4.MySQL -->
+                <tr>
+                    <td class="text-center">MySQL</td>
+                    <td><textarea id="code4">
+SELECT .1 + .2;
+</textarea></td>
+                    <td>0.3</td>
+                </tr>
+                <!-- 5.Postgres -->
+                <tr>
+                    <td class="text-center">Postgres</td>
+                    <td><textarea id="code5">
+SELECT select 0.1::float + 0.2::float;
+</textarea></td>
+                    <td>0.3</td>
+                </tr>
+                <!-- 6.Delphi XE5 -->
+                <tr>
+                    <td class="text-center">Delphi XE5</td>
+                    <td><textarea id="code6">
+writeln(0.1 + 0.2);
+</textarea></td>
+                    <td>3.00000000000000E-0001</td>
+                </tr>
+                <!-- 7.Erlang -->
+                <tr>
+                    <td class="text-center">Erlang</td>
+                    <td><textarea id="code7">
+io:format("~w~n", [0.1 + 0.2]).
+</textarea></td>
+                    <td>0.30000000000000004</td>
+                </tr>
+                <!-- 8.Elixir -->
+                <tr>
+                    <td class="text-center">Elixir</td>
+                    <td><textarea id="code8">
+IO.puts(0.1 + 0.2)
+</textarea></td>
+                    <td>0.30000000000000004</td>
+                </tr>
+                <!-- 9.Ruby -->
+                <tr>
+                    <td class="text-center">Ruby</td>
+                    <td><textarea id="code9">
+puts 0.1 + 0.2
+And
+puts 1/10r + 2/10r
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004<br />
+                        And<br />
+                        3/10</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+
+                        Ruby supports rational numbers in syntax with version 2.1 and newer directly.  For older versions use
+                        <a target="_blank" href="http://ruby-doc.org/core/classes/Rational.html">Rational</a>.
+                        <br>
+                        Ruby also has a library specifically for decimals:
+                        <a target="_blank" href="http://ruby-doc.org/stdlib/libdoc/bigdecimal/rdoc/index.html">BigDecimal</a>.
+
+                    </td>
+                </tr>
+                <!-- 10.Python 2 -->
+                <tr>
+                    <td class="text-center">Python 2</td>
+                    <td><textarea id="code10">
+print(.1 + .2)
+And
+float(decimal.Decimal(".1") + decimal.Decimal(".2"))
+And
+.1 + .2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        And<br />
+                        0.3<br />
+                        And<br />
+                        0.30000000000000004
+                </tr>
+                <!-- 11.Python 3 -->
+                <tr>
+                    <td class="text-center">Python 3</td>
+                    <td><textarea id="code11">
+print(.1 + .2)
+And
+.1 + .2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004<br />
+                        And<br />
+                        0.30000000000000004
+                </tr>
+                <!-- 12.Lua -->
+                <tr>
+                    <td class="text-center">Lua</td>
+                    <td><textarea id="code12">
+print(.1 + .2)
+print(string.format("%0.17f", 0.1 + 0.2))
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        0.30000000000000004
+                </tr>
+                <!-- 13.JavaScript -->
+                <tr>
+                    <td class="text-center">JavaScript</td>
+                    <td><textarea id="code13">
+document.writeln(.1 + .2);
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <!-- 14.JavaScript -->
+                <tr>
+                    <td class="text-center">Java</td>
+                    <td><textarea id="code14">
+System.out.println(.1 + .2);
+And
+System.out.println(.1F + .2F);
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004<br />
+                        And<br />
+                        0.3
+                </tr>
+                <!-- 15.Julia -->
+                <tr>
+                    <td class="text-center">Julia</td>
+                    <td><textarea id="code15">
+.1 + .2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        Julia has built-in
+                        <a target="_blank" href="http://docs.julialang.org/en/release-0.4/manual/complex-and-rational-numbers/#rational-numbers">rational numbers support</a>
+                        and also a built-in
+                        <a target="_blank" href="http://docs.julialang.org/en/release-0.4/manual/integers-and-floating-point-numbers/#arbitrary-precision-arithmetic">arbitrary-precision BigFloat</a> data type.
+                        To get the math right,
+                        <code>1//10 + 2//10</code> returns <code>3//10</code>.
+                    </td>
+                </tr>
+                <!-- 16.Clojure -->
+                <tr>
+                    <td class="text-center">Clojure</td>
+                    <td><textarea id="code16">
+(+ 0.1 0.2)
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        Clojure supports arbitrary precision and ratios.
+                        <code>(+ 0.1M 0.2M)</code> returns <code>0.3M</code>, while
+                        <code>(+ 1/10 2/10)</code> returns <code>3/10</code>.
+                    </td>
+                </tr>
+                <!-- 17.C# -->
+                <tr>
+                    <td class="text-center">C#</td>
+                    <td><textarea id="code17">
+Console.WriteLine("{0:R}", .1 + .2);
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <!-- 18.GHC (Haskell) -->
+                <tr>
+                    <td class="text-center">GHC (Haskell)</td>
+                    <td><textarea id="code18">
+0.1 + 0.2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        Haskell supports rational numbers. To get the math right,
+                        <code>(1 % 10) + (2 % 10)</code> returns <code>3 % 10</code>.
+                    </td>
+                </tr>
+                <!-- 19.Hugs (Haskell) -->
+                <tr>
+                    <td class="text-center">Hugs (Haskell)</td>
+                    <td><textarea id="code19">
+0.1 + 0.2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3
+                </tr>
+                <!-- 20.bc -->
+                <tr>
+                    <td class="text-center">bc</td>
+                    <td><textarea id="code20">
+0.1 + 0.2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3
+                </tr>
+                <!-- 21.Nim -->
+                <tr>
+                    <td class="text-center">Nim</td>
+                    <td><textarea id="code21">
+echo(0.1 + 0.2)
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3
+                </tr>
+                <!-- 22.Gforth -->
+                <tr>
+                    <td class="text-center">Gforth</td>
+                    <td><textarea id="code22">
+0.1e 0.2e f+ f.
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3
+                </tr>
+                <!-- 23.dc -->
+                <tr>
+                    <td class="text-center">dc</td>
+                    <td><textarea id="code23">
+0.1 0.2 + p
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        .3
+                </tr>
+                <!-- 24.Racket (PLT Scheme) -->
+                <tr>
+                    <td class="text-center">Racket (PLT Scheme)</td>
+                    <td><textarea id="code24">
+(+ .1 .2)
+And
+(+ 1/10 2/10)
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004<br />
+                        And<br />
+                        3/10
+                </tr>
+                <!-- 25.Rust -->
+                <tr>
+                    <td class="text-center">Rust</td>
+                    <td><textarea id="code25">
+extern crate num;
+use num::rational::Ratio;
+fn main() {
+    println!(.1+.2);
+    println!("1/10 + 2/10 = {}", Ratio::new(1, 10) + Ratio::new(2, 10));
+}
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004<br />
+                        3/10
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        Rust has
+                        <a target="_blank" href="https://doc.rust-lang.org/num/num/rational/struct.Ratio.html">rational number support</a>
+                        from the
+                        <a target="_blank" href="https://doc.rust-lang.org/num/num/index.html">num crate</a>.
+                    </td>
+                </tr>
+                <!-- 26.Emacs Lisp -->
+                <tr>
+                    <td class="text-center">Emacs Lisp</td>
+                    <td><textarea id="code26">
+(+ .1 .2)
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <!-- 27.Turbo Pascal 7.0 -->
+                <tr>
+                    <td class="text-center">Turbo Pascal 7.0</td>
+                    <td><textarea id="code27">
+writeln(0.1 + 0.2);
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        3.0000000000E-01
+                </tr>
+                <!-- 28.Common Lisp -->
+                <tr>
+                    <td class="text-center">Common Lisp</td>
+                    <td><textarea id="code28">
+* (+ .1 .2)
+And
+* (+ 1/10 2/10)
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        And<br />
+                        3/10
+                </tr>
+                <!-- 29.Go -->
+                <tr>
+                    <td class="text-center">Go</td>
+                    <td><textarea id="code29">
+package main
+import "fmt"
+func main() {
+	fmt.Println(.1 + .2)
+	var a float64 = .1
+	var b float64 = .2
+	fmt.Println(a + b)
+	fmt.Printf("%.54f\n", .1 + .2)
+}
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        0.30000000000000004<br />
+                        0.2999999999999999888977697537484345957636833
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        <a href="http://blog.golang.org/constants#TOC_8.">Go numeric constants have arbitrary precision</a>.
+                    </td>
+                </tr>
+                <!-- 30.Objective-C -->
+                <tr>
+                    <td class="text-center">Objective-C</td>
+                    <td><textarea id="code30">
+0.1 + 0.2;
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.300000012
+                </tr>
+                <!-- 31.OCaml -->
+                <tr>
+                    <td class="text-center">OCaml</td>
+                    <td><textarea id="code31">
+0.1 +. 0.2;;
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        float = 0.300000000000000044
+                </tr>
+                <!-- 32.Powershell -->
+                <tr>
+                    <td class="text-center">Powershell</td>
+                    <td><textarea id="code32">
+PS C:\>0.1 + 0.2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3
+                </tr>
+                <!-- 33.Prolog (SWI-Prolog) -->
+                <tr>
+                    <td class="text-center">Prolog (SWI-Prolog)</td>
+                    <td><textarea id="code33">
+?- X is 0.1 + 0.2.
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        X = 0.30000000000000004.
+                </tr>
+                <!-- 34.Perl 5 -->
+                <tr>
+                    <td class="text-center">Perl 5</td>
+                    <td><textarea id="code34">
+perl -E 'say 0.1+0.2'
+perl -e 'printf q{%.17f}, 0.1+0.2'
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        0.30000000000000004
+                </tr>
+                <!-- 35.Perl 6 -->
+                <tr>
+                    <td class="text-center">Perl 6</td>
+                    <td><textarea id="code35">
+perl6 -e 'say 0.1+0.2'
+perl6 -e 'say sprintf(q{%.17f}, 0.1+0.2)'
+perl6 -e 'say 1/10+2/10'
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        0.30000000000000000<br />
+                        0.3
+                </tr>
+                <tr>
+                    <td colspan="3" class="borders-top-none">
+                        <a href="http://doc.perl6.org/type/Rational">Perl 6, unlike Perl 5, uses rationals by default, so .1 is stored something like { numerator =&gt; 1, denominator =&gt; 10 }.</a>.
+                    </td>
+                </tr>
+                <!-- 36.R -->
+                <tr>
+                    <td class="text-center">R</td>
+                    <td><textarea id="code36">
+print(.1+.2)
+print(.1+.2, digits=18)
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3<br />
+                        0.300000000000000044
+                </tr>
+                <!-- 37.scala -->
+                <tr>
+                    <td class="text-center">scala</td>
+                    <td><textarea id="code37">
+scala -e 'println(0.1 + 0.2)'
+And
+scala -e 'println(0.1F + 0.2F)' And
+scala -e 'println(BigDecimal("0.1") + BigDecimal("0.2"))'
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004<br />
+                        And<br />
+                        0.3<br />
+                        And<br />
+                        0.3
+                </tr>
+                <!-- 38.Smalltalk -->
+                <tr>
+                    <td class="text-center">Smalltalk</td>
+                    <td><textarea id="code38">
+0.1 + 0.2.
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.30000000000000004
+                </tr>
+                <!-- 39.Swift -->
+                <tr>
+                    <td class="text-center">Swift</td>
+                    <td><textarea id="code39">
+0.1 + 0.2
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.3
+                </tr>
+                <!-- 40.D -->
+                <tr>
+                    <td class="text-center">D</td>
+                    <td><textarea id="code40">
+import std.stdio;
+
+void main(string[] args) {
+    writefln("%.17f", .1+.2);
+    writefln("%.17f", .1f+.2f);
+    writefln("%.17f", .1L+.2L);
+}
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        0.29999999999999999<br />
+                        0.30000001192092896<br />
+                        0.30000000000000000
+                </tr>
+                <!-- 41.ABAP -->
+                <tr>
+                    <td class="text-center">ABAP</td>
+                    <td><textarea id="code41">
+WRITE / CONV f( '.1' + '.2' ).
+And
+WRITE / CONV decfloat16( '.1' + '.2' ).
+</textarea></td>
+                    <td class="borders-bottom-none">
+                        3.0000000000000004E-01<br />
+                        And<br />
+                        0.3
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<div>
+    <p>
+        联系我:<a href="mailto:ligangmingx@gmail.com">ligangmingx@gmail.com</a>.
+    </p>
+    <p>
+       GitHub: <a href="https://github.com/fifths/0.30000000000000004">github</a>.
+        如果您认为此页面可以改进, 请提交给我.
+    </p>
+</div>
+
+</div>
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script>
+    (function (){
+        for (var i=1;i<=41;i++){
+            code(i);
+        }
+        function code(id){
+            var textarea = document.getElementById('code'+id);
+            CodeMirror.fromTextArea(textarea, {
+                lineNumbers: true,
+                mode: "text/x-csrc",
+                readOnly : true,
+            });
+        }
+    })();
+</script>
+
+</body>
+</html>
