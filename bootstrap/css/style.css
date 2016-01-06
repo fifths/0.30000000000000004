@@ -7,18 +7,3 @@
     border: 1px solid #ddd;
     border: 1px solid rgba(86,61,124,.2);
 }*/
-.CodeMirror {
-    height: auto !important;
-}
-.center {
-    display: table;
-    width: auto;
-    margin-left: auto;
-    margin-right: auto;
-}
-.borders-top-none{
-    border-top:none !important;
-}
-.borders-bottom-none{
-    border-bottom: none;
-}
